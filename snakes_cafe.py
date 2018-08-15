@@ -33,6 +33,23 @@ ITEMS = [
     },
     {
     'section': 'Appetizers',
+    'item': 'Fried Rice',
+    'item_selects': 0,
+    'cost': 4.15,
+    },{
+    'section': 'Appetizers',
+    'item': 'Poutine',
+    'item_selects': 0,
+    'cost': 6.35,
+    },
+    {
+    'section': 'Appetizers',
+    'item': 'Bean Dip',
+    'item_selects': 0,
+    'cost': 1.19,
+    },
+    {
+    'section': 'Appetizers',
     'item': 'Cheese Sticks',
     'item_selects': 0,
     'cost': 5.75,
@@ -80,6 +97,24 @@ ITEMS = [
     'cost': 15.00,
     },
     {
+    'section': 'Entrees',
+    'item': 'Fajitas',
+    'item_selects': 0,
+    'cost': 16.75,
+    },
+    {
+    'section': 'Entrees',
+    'item': 'Chicken Katsu',
+    'item_selects': 0,
+    'cost': 10.99,
+    },
+    {
+    'section': 'Entrees',
+    'item': 'Fried Chicken',
+    'item_selects': 0,
+    'cost': 15.99,
+    },
+    {
     'section': 'Desserts',
     'item': 'Ice Cream',
     'item_selects': 0,
@@ -114,6 +149,24 @@ ITEMS = [
     'item': 'Milkshake',
     'item_selects': 0,
     'cost': 6.20,
+    },
+    {
+    'section': 'Desserts',
+    'item': 'Creme Brulee',
+    'item_selects': 0,
+    'cost': 8.99,
+    },
+    {
+    'section': 'Desserts',
+    'item': 'Chocolate Bar',
+    'item_selects': 0,
+    'cost': 4.99,
+    },
+    {
+    'section': 'Desserts',
+    'item': 'Peach Cobbler',
+    'item_selects': 0,
+    'cost': 12.99,
     },
     {
     'section': 'Drinks',
@@ -152,6 +205,24 @@ ITEMS = [
     'cost': 12.00,
     },
     {
+    'section': 'Drinks',
+    'item': 'Beer',
+    'item_selects': 0,
+    'cost': 5.75,
+    },
+    {
+    'section': 'Drinks',
+    'item': 'Lemonade',
+    'item_selects': 0,
+    'cost': 3.99,
+    },
+    {
+    'section': 'Drinks',
+    'item': 'Shirley Temple',
+    'item_selects': 0,
+    'cost': 4.55,
+    },
+    {
     'section': 'Sides',
     'item': 'Hash Browns',
     'item_selects': 0,
@@ -165,7 +236,7 @@ ITEMS = [
     },
     {
     'section': 'Sides',
-    'item': 'BBQ',
+    'item': 'BBQ Sauce',
     'item_selects': 0,
     'cost': 0.50,
     },
@@ -186,6 +257,24 @@ ITEMS = [
     'item': 'Pickles',
     'item_selects': 0,
     'cost': 2.75,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Tatar Sauce',
+    'item_selects': 0,
+    'cost': 0.50,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Ketchup',
+    'item_selects': 0,
+    'cost': 0.50,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Mayonnaise',
+    'item_selects': 0,
+    'cost': 0.50,
     },
     ]
 SECTIONS = [
@@ -307,8 +396,7 @@ def view_order_total():
             # stln_five(Decimal('10.00')))
             white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
             print(dedent(f'''
-                {ln_four + white_space_length + ln_five}
-            '''))
+            {ln_four + white_space_length + ln_five}'''))
     tax_total = total_cost * (0.101)
     totals_total = total_cost + tax_total
     ln_six = 'Subtotal'
