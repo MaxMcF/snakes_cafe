@@ -128,9 +128,7 @@ def menu():
         for elm in ITEMS:
             if item['section'] == elm['section']:
                 ln_two = elm['item']
-                print(dedent(f'''
-                    {ln_two}
-                '''))
+                print(dedent(f'''{ln_two}'''))
 
 
 def order_question():
@@ -211,6 +209,8 @@ def view_order_total():
         {ln_ten + white_space_length_03 + ln_eleven}
         {'*' * WIDTH}
     '''))
+    selection = input('')
+    order_something(selection)
 
 
 
