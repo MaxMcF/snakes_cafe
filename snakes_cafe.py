@@ -233,9 +233,11 @@ def view_category(section):
     for elm in ITEMS:
         if section == elm['section']:
             ln_two = elm['item']
-            print(dedent(f'''
-                {ln_two}
-                '''))
+            ln_three = '$' + str("{:.2f}".format(elm['cost']))
+            ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
+            print(dedent(f'''{ln_four}'''))
+    print(dedent('''
+    '''))
 
 
 def view_order_total():
@@ -297,6 +299,16 @@ def remove_item(item_remove):
         if elm['item'].lower() == ' '.join(str(item_remove).lower().split()[1::]):
             if elm['item_selects'] > 0:
                 elm['item_selects'] -= 1
+                print(dedent(f'''
+                One order of {elm['item']} has been removed from your order.
+                '''))
+            else:
+                print(dedent(f'''
+                You can only remove menu items you've already added!
+                '''))
+                selection = input('')
+                order_something(selection)
+                break
     view_order_total()
 
 
