@@ -1,73 +1,89 @@
 from textwrap import dedent
+from decimal import Decimal, ROUND_UP
 import sys
+import uuid
 
 
 WIDTH = 96
+# order_complete = False
 ITEMS = [
     {
     'section': 'Appetizers',
     'item': 'Wings',
     'item_selects': 0,
+    'cost': 2.00,
     },
     {
     'section': 'Appetizers',
     'item': 'Cookies',
     'item_selects': 0,
+    'cost': 2.50,
     },
     {
     'section': 'Appetizers',
     'item': 'Spring Rolls',
     'item_selects': 0,
+    'cost': 3.25,
     },
     {
     'section': 'Entrees',
     'item': 'Salmon',
     'item_selects': 0,
+    'cost': 12.75,
     },
     {
     'section': 'Entrees',
     'item': 'Steak',
     'item_selects': 0,
+    'cost': 18.50,
     },
     {
     'section': 'Entrees',
     'item': 'Meat Tornado',
     'item_selects': 0,
+    'cost': 22.99,
     },
     {
     'section': 'Entrees',
     'item': 'A Literal Garden',
     'item_selects': 0,
+    'cost': 199.99,
     },
     {
     'section': 'Desserts',
     'item': 'Ice Cream',
     'item_selects': 0,
+    'cost': 5.00,
     },
     {
     'section': 'Desserts',
     'item': 'Cake',
     'item_selects': 0,
+    'cost': 15.99,
     },
     {
     'section': 'Desserts',
     'item': 'Pie',
     'item_selects': 0,
+    'cost': 12.25,
     },
     {
     'section': 'Drinks',
     'item': 'Coffee',
     'item_selects': 0,
+    'cost': 5.00
     },
     {
     'section': 'Drinks',
     'item': 'Tea',
     'item_selects': 0,
+    'cost': 3.75,
     },
     {
     'section': 'Drinks',
     'item': 'Blood of the Internet',
     'item_selects': 0,
+    'cost': 666.66
     },
     ]
 SECTIONS = [
@@ -128,23 +144,84 @@ def order_question():
     order_something(user_input)
 
 
+def view_menu():
+    menu()
+    selection = input('')
+    order_something(selection)
+
+
+def view_category(section):
+    ln_one = section
+    print(dedent(f'''
+        {ln_one}
+        {'-' * len(ln_one)}
+        '''))
+    for elm in ITEMS:
+        if section == elm['section']:
+            ln_two = elm['item']
+            print(dedent(f'''
+                {ln_two}
+                '''))
+
+
+def view_order_total():
+    total_cost = 0
+    ln_one = 'The Snakes Cafe'
+    ln_two = '"Eatability unconstricted!"'
+    ln_three = str('Order #') + str(uuid.uuid4())
+    print(dedent(f'''
+        {'*' * WIDTH}
+        {ln_one}
+        {ln_two}
+
+        {ln_three}
+        {'=' * WIDTH}
+    '''))
+    for elm in ITEMS:
+        if elm['item_selects'] != 0:
+            total_cost = total_cost + (elm['cost']*elm['item_selects'])
+            ln_four = str(elm['item']) + ' x' + str(elm['item_selects'])
+            item_total_cost = elm['item_selects'] * elm['cost']
+            item_cost_dec = str("{:.2f}".format(item_total_cost))
+            ln_five = '$' + str(item_cost_dec)
+            # stln_five(Decimal('10.00')))
+            white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
+            print(dedent(f'''
+                {ln_four + white_space_length + ln_five}
+            '''))
+
+
+
 def order_something(user_input):
     if str(user_input).lower() == 'quit':
         exit()
         return
+    elif str(user_input).lower() == 'menu':
+        view_menu()
+        return
+    elif str(user_input).lower() == 'order':
+        view_order_total()
+        return
+    for category in SECTIONS:
+        if category['section'].lower() == str(user_input).lower():
+            view_category(category['section'])
+            selection = input('')
+            order_something(selection)
+            return
     for menu_items in ITEMS:
         if menu_items['item'].lower() == str(user_input).lower():
             menu_items['item_selects'] += 1
             order_complete(menu_items)
-        # elif :
-        #     print(dedent('''
-        #         Please order something off the menu!
-        #     '''))
-            # wrong_order()
+            return
+    else:
+        print(dedent('''
+            Please order something off the menu!
+        '''))
+        wrong_order()
 
-# def wrong_order():
-#     selection = input('')
-#     order_something(selection)
+def wrong_order():
+    selection = input('')
+    order_something(selection)
 
 
 def order_complete(order_status):
