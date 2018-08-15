@@ -1,4 +1,4 @@
-from snakes_cafe import order_something
+from snakes_cafe.snakes_cafe import order_something
 import pytest
 
 def test_order_function_exists():
