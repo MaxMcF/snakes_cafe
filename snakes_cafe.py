@@ -151,6 +151,42 @@ ITEMS = [
     'item_selects': 0,
     'cost': 12.00,
     },
+    {
+    'section': 'Sides',
+    'item': 'Hash Browns',
+    'item_selects': 0,
+    'cost': 3.00,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Bacon',
+    'item_selects': 0,
+    'cost': 2.50,
+    },
+    {
+    'section': 'Sides',
+    'item': 'BBQ',
+    'item_selects': 0,
+    'cost': 0.50,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Guacamole',
+    'item_selects': 0,
+    'cost': 500.00,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Fortune Cookie',
+    'item_selects': 0,
+    'cost': 1.00,
+    },
+    {
+    'section': 'Sides',
+    'item': 'Pickles',
+    'item_selects': 0,
+    'cost': 2.75,
+    },
     ]
 SECTIONS = [
     {
@@ -164,6 +200,9 @@ SECTIONS = [
     },
     {
     'section': 'Drinks',
+    },
+    {
+    'section': 'Sides',
     },
 ]
 
@@ -203,7 +242,7 @@ def menu():
         for elm in ITEMS:
             if item['section'] == elm['section']:
                 ln_two = elm['item']
-                ln_three = '$' + str("{:.2f}".format(elm['cost']))
+                ln_three = format_nums(elm['cost'])
                 ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
                 print(dedent(f'''{ln_four}'''))
 
@@ -237,7 +276,7 @@ def view_category(section):
     for elm in ITEMS:
         if section == elm['section']:
             ln_two = elm['item']
-            ln_three = '$' + str("{:.2f}".format(elm['cost']))
+            ln_three = format_nums(elm['cost'])
             ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
             print(dedent(f'''{ln_four}'''))
     print(dedent('''
@@ -270,19 +309,16 @@ def view_order_total():
             print(dedent(f'''
                 {ln_four + white_space_length + ln_five}
             '''))
-    total_dec = str("{:.2f}".format(total_cost))
     tax_total = total_cost * (0.101)
-    tax_dec = str("{:.2f}".format(tax_total))
     totals_total = total_cost + tax_total
-    totals_total_dec = str("{:.2f}".format(totals_total))
     ln_six = 'Subtotal'
-    ln_seven = '$' + str(total_dec)
+    ln_seven = format_nums(total_cost)
     white_space_length_01 = (' ' * (WIDTH - (len(ln_six) + len(ln_seven))))
     ln_eight = 'Sales Tax'
-    ln_nine = '$' + str(tax_dec)
+    ln_nine = format_nums(tax_total)
     white_space_length_02 = (' ' * (WIDTH - (len(ln_eight) + len(ln_nine))))
     ln_ten = 'Total Due'
-    ln_eleven = '$' + str(totals_total_dec)
+    ln_eleven = format_nums(totals_total)
     white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
     print(dedent(f'''
         {'-' * WIDTH}
@@ -356,20 +392,31 @@ def wrong_order():
 # This function displays when a single item has been added to the users meal order
 def order_complete(order_status):
     if order_status['item_selects'] > 1:
-        ln_one = ' orders of '
-        ln_two = ' have been added to your meal'
+        string_one = ' orders of '
+        string_two = ' have been added to your meal'
     else:
-        ln_one = ' order of '
-        ln_two = ' has been added to your meal'
-    ln_three = order_status['item_selects']
-    ln_four = order_status['item']
-    usable_line = str(ln_three) + str(ln_one) + str(ln_four) + str(ln_two)
+        string_one = ' order of '
+        string_two = ' has been added to your meal'
+    running_total = 0
+    for elm in ITEMS:
+        if elm['item_selects'] > 0:
+            running_total = running_total + (elm['item_selects'] * elm['cost'])
+    string_three = order_status['item_selects']
+    string_four = order_status['item']
+    ln_one = str(string_three) + str(string_one) + str(string_four) + str(string_two)
+    ln_two = 'Your running total is ' + format_nums(running_total)
+
     print(dedent(f'''
-        {'**' + (' ' * (((WIDTH - len(usable_line)) // 2)-2)) + usable_line + (' ' * (((WIDTH - len(usable_line)) // 2)-2)) + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + ln_one + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + ln_two + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + '**'}
     '''))
     selection = input(' ')
     order_something(selection)
 
+
+def format_nums(number):
+    string = '$' + str("{:.2f}".format(number))
+    return string
 
 # This function allows the user to exit the program
 def exit():
