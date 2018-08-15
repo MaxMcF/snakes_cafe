@@ -26,6 +26,24 @@ ITEMS = [
     'cost': 3.25,
     },
     {
+    'section': 'Appetizers',
+    'item': 'Fries',
+    'item_selects': 0,
+    'cost': 3.15,
+    },
+    {
+    'section': 'Appetizers',
+    'item': 'Cheese Sticks',
+    'item_selects': 0,
+    'cost': 5.75,
+    },
+    {
+    'section': 'Appetizers',
+    'item': 'Chips and Dip',
+    'item_selects': 0,
+    'cost': 2.75,
+    },
+    {
     'section': 'Entrees',
     'item': 'Salmon',
     'item_selects': 0,
@@ -50,6 +68,18 @@ ITEMS = [
     'cost': 199.99,
     },
     {
+    'section': 'Entrees',
+    'item': 'Burrito',
+    'item_selects': 0,
+    'cost': 8.50,
+    },
+    {
+    'section': 'Entrees',
+    'item': 'Pizza',
+    'item_selects': 0,
+    'cost': 15.00,
+    },
+    {
     'section': 'Desserts',
     'item': 'Ice Cream',
     'item_selects': 0,
@@ -68,6 +98,24 @@ ITEMS = [
     'cost': 12.25,
     },
     {
+    'section': 'Desserts',
+    'item': 'Gelato',
+    'item_selects': 0,
+    'cost': 8.00,
+    },
+    {
+    'section': 'Desserts',
+    'item': 'Popsicle',
+    'item_selects': 0,
+    'cost': 1.50,
+    },
+    {
+    'section': 'Desserts',
+    'item': 'Milkshake',
+    'item_selects': 0,
+    'cost': 6.20,
+    },
+    {
     'section': 'Drinks',
     'item': 'Coffee',
     'item_selects': 0,
@@ -84,6 +132,24 @@ ITEMS = [
     'item': 'Blood of the Internet',
     'item_selects': 0,
     'cost': 666.66
+    },
+    {
+    'section': 'Drinks',
+    'item': 'Kool-Aid',
+    'item_selects': 0,
+    'cost': 3.75,
+    },
+    {
+    'section': 'Drinks',
+    'item': 'Martini',
+    'item_selects': 0,
+    'cost': 7.50,
+    },
+    {
+    'section': 'Drinks',
+    'item': 'Purple Drank',
+    'item_selects': 0,
+    'cost': 12.00,
     },
     ]
 SECTIONS = [
@@ -214,6 +280,14 @@ def view_order_total():
 
 
 
+def remove_item(item_remove):
+    for elm in ITEMS:
+        if elm['item'].lower() == str(item_remove).lower().split()[1]:
+            if elm['item_selects'] > 0:
+                elm['item_selects'] -= 1
+    view_order_total()
+
+
 def order_something(user_input):
     if str(user_input).lower() == 'quit':
         exit()
@@ -223,6 +297,9 @@ def order_something(user_input):
         return
     elif str(user_input).lower() == 'order':
         view_order_total()
+        return
+    elif str(user_input).lower().split()[0] == 'remove':
+        remove_item(user_input)
         return
     for category in SECTIONS:
         if category['section'].lower() == str(user_input).lower():
