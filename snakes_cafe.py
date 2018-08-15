@@ -189,6 +189,28 @@ def view_order_total():
             print(dedent(f'''
                 {ln_four + white_space_length + ln_five}
             '''))
+    total_dec = str("{:.2f}".format(total_cost))
+    tax_total = total_cost * (0.101)
+    tax_dec = str("{:.2f}".format(tax_total))
+    totals_total = total_cost + tax_total
+    totals_total_dec = str("{:.2f}".format(totals_total))
+    ln_six = 'Subtotal'
+    ln_seven = '$' + str(total_dec)
+    white_space_length_01 = (' ' * (WIDTH - (len(ln_six) + len(ln_seven))))
+    ln_eight = 'Sales Tax'
+    ln_nine = '$' + str(tax_dec)
+    white_space_length_02 = (' ' * (WIDTH - (len(ln_eight) + len(ln_nine))))
+    ln_ten = 'Total Due'
+    ln_eleven = '$' + str(totals_total_dec)
+    white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
+    print(dedent(f'''
+        {'-' * WIDTH}
+        {ln_six + white_space_length_01 + ln_seven}
+        {ln_eight + white_space_length_02 + ln_nine}
+        {'-' * len(ln_eight)}
+        {ln_ten + white_space_length_03 + ln_eleven}
+        {'*' * WIDTH}
+    '''))
 
 
 
