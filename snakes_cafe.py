@@ -171,14 +171,22 @@ SECTIONS = [
 def greeting():
     ln_one = 'Welcome to the Snakes Cafe!'
     ln_two = 'Please see our menu below.'
-    ln_three = 'To quit at any time, type "quit"'
+    ln_three = 'To view the menu at any time, type "menu"'
+    ln_four = 'To view any menu section, type the section'
+    ln_five = 'To view your order, type "order"'
+    ln_six = 'To remove an item from your order, type "remove (your item)"'
+    ln_seven = 'To quit at any time, type "quit"'
 
     print(dedent(f'''
         {'*' * WIDTH}
         {'**' + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + ln_one + (' ' * (((WIDTH - len(ln_one)) // 2)-1)) + '**'}
         {'**' + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + ln_two + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + '**'}
-        {'**'}
         {'**' + (' ' * (((WIDTH - len(ln_three)) // 2)-2)) + ln_three + (' ' * (((WIDTH - len(ln_three)) // 2)-2)) + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_four)) // 2)-2)) + ln_four + (' ' * (((WIDTH - len(ln_four)) // 2)-2)) + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_five)) // 2)-2)) + ln_five + (' ' * (((WIDTH - len(ln_five)) // 2)-2)) + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_six)) // 2)-2)) + ln_six + (' ' * (((WIDTH - len(ln_six)) // 2)-2)) + '**'}
+        {'**' + ((WIDTH-4) * ' ') + '**'}
+        {'**' + (' ' * (((WIDTH - len(ln_seven)) // 2)-2)) + ln_seven + (' ' * (((WIDTH - len(ln_seven)) // 2)-2)) + '**'}
         {'*' * WIDTH}
     '''))
 
