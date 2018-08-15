@@ -167,7 +167,7 @@ SECTIONS = [
     },
 ]
 
-
+# This function displays the initial greeting, as well as the function commands available
 def greeting():
     ln_one = 'Welcome to the Snakes Cafe!'
     ln_two = 'Please see our menu below.'
@@ -191,6 +191,7 @@ def greeting():
     '''))
 
 
+# This function displays the menu of items.
 def menu():
     for item in SECTIONS:
         ln_one = item['section']
@@ -207,6 +208,7 @@ def menu():
                 print(dedent(f'''{ln_four}'''))
 
 
+# This function displays a question, and call the order_something function with user input as the argument
 def order_question():
     ln_one = 'What would you like to order?'
     question = dedent(f'''
@@ -218,12 +220,14 @@ def order_question():
     order_something(user_input)
 
 
+# This function calls the menu function and allows for the user to input a new command
 def view_menu():
     menu()
     selection = input('')
     order_something(selection)
 
 
+# This function allows the user to view a specific category, as well as all the items within that category
 def view_category(section):
     ln_one = section
     print(dedent(f'''
@@ -240,6 +244,7 @@ def view_category(section):
     '''))
 
 
+# This function displays the total cost owed depending on the state of the users order
 def view_order_total():
     total_cost = 0
     ln_one = 'The Snakes Cafe'
@@ -291,11 +296,9 @@ def view_order_total():
     order_something(selection)
 
 
-
+# This function removes a single item from the users current meal.
 def remove_item(item_remove):
     for elm in ITEMS:
-        # item_string_in_list =
-        # item_to_be_removed = item_string_in_list[1]
         if elm['item'].lower() == ' '.join(str(item_remove).lower().split()[1::]):
             if elm['item_selects'] > 0:
                 elm['item_selects'] -= 1
@@ -312,6 +315,7 @@ def remove_item(item_remove):
     view_order_total()
 
 
+# This function is the main user input handler.
 def order_something(user_input):
     if str(user_input).lower() == 'quit':
         exit()
@@ -337,16 +341,19 @@ def order_something(user_input):
             order_complete(menu_items)
             return
     else:
-        print(dedent('''
-            Please order something off the menu!
-        '''))
         wrong_order()
 
+
+# This function displays when the user puts in an incorrect order
 def wrong_order():
+    print(dedent('''
+            Please order something off the menu!
+        '''))
     selection = input('')
     order_something(selection)
 
 
+# This function displays when a single item has been added to the users meal order
 def order_complete(order_status):
     if order_status['item_selects'] > 1:
         ln_one = ' orders of '
@@ -364,6 +371,7 @@ def order_complete(order_status):
     order_something(selection)
 
 
+# This function allows the user to exit the program
 def exit():
     print(dedent('''
         Thanks you, come again!
@@ -371,6 +379,7 @@ def exit():
     sys.exit()
 
 
+# This is the main function handler
 def run():
     greeting()
     menu()
