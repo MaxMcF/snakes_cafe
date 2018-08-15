@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 uuid = "*"
+pytest = "*"
 
 [dev-packages]
 pylint = "*"
