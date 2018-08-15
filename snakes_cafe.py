@@ -202,7 +202,9 @@ def menu():
         for elm in ITEMS:
             if item['section'] == elm['section']:
                 ln_two = elm['item']
-                print(dedent(f'''{ln_two}'''))
+                ln_three = '$' + str("{:.2f}".format(elm['cost']))
+                ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
+                print(dedent(f'''{ln_four}'''))
 
 
 def order_question():
@@ -290,7 +292,9 @@ def view_order_total():
 
 def remove_item(item_remove):
     for elm in ITEMS:
-        if elm['item'].lower() == str(item_remove).lower().split()[1]:
+        # item_string_in_list =
+        # item_to_be_removed = item_string_in_list[1]
+        if elm['item'].lower() == ' '.join(str(item_remove).lower().split()[1::]):
             if elm['item_selects'] > 0:
                 elm['item_selects'] -= 1
     view_order_total()
