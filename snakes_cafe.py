@@ -5,6 +5,8 @@ import uuid
 import math
 
 
+# This currently does not allow for multi line inputs to work. Needs refactoring in the remove function as well. Need everything for lab 3, currently nothing...
+
 WIDTH = 96
 # order_complete = False
 ITEMS = {
@@ -161,9 +163,10 @@ def view_order_total():
     for elm in CART:
         for sections in ITEMS:
             if elm in ITEMS[sections]:
-                total_cost = total_cost + (elm[0] * ITEMS[sections][elm][0])
-                ln_four = str(elm) + ' x' + str(elm[0])
-                item_total_cost = elm[0] * ITEMS[sections][elm][0]
+                print(CART[elm])
+                total_cost = total_cost + (CART[elm] * ITEMS[sections][elm][0])
+                ln_four = str(elm) + ' x' + str(CART[elm])
+                item_total_cost = CART[elm] * ITEMS[sections][elm][0]
                 item_cost_dec = str("{:.2f}".format(item_total_cost))
                 ln_five = '$' + str(item_cost_dec)
                 white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
@@ -194,7 +197,14 @@ def view_order_total():
 
 # This function removes a single item from the users current meal.
 def remove_item(item_remove):
-    for elm in ITEMS:
+    item_to_remove_placeholder = str(item_remove).split()[1::]
+
+    for i in range(len(item_to_remove_placeholder)):
+        item_to_remove_placeholder[i] = item_to_remove_placeholder[i].capitalize()
+
+    item_to_remove = ' '.join(item_to_remove_placeholder)
+    print(item_to_remove)
+    if item_to_remove in CART:
         if elm['item'].lower() == ' '.join(str(item_remove).lower().split()[1::]):
             if elm['item_selects'] > 0:
                 elm['item_selects'] -= 1
@@ -207,7 +217,6 @@ def remove_item(item_remove):
                 '''))
                 selection = input('')
                 order_something(selection)
-                break
     view_order_total()
 
 
