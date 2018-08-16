@@ -163,7 +163,6 @@ def view_order_total():
     for elm in CART:
         for sections in ITEMS:
             if elm in ITEMS[sections]:
-                print(CART[elm])
                 total_cost = total_cost + (CART[elm] * ITEMS[sections][elm][0])
                 ln_four = str(elm) + ' x' + str(CART[elm])
                 item_total_cost = CART[elm] * ITEMS[sections][elm][0]
@@ -198,31 +197,35 @@ def view_order_total():
 # This function removes a single item from the users current meal.
 def remove_item(item_remove):
     item_to_remove_placeholder = str(item_remove).split()[1::]
-
-    for i in range(len(item_to_remove_placeholder)):
-        item_to_remove_placeholder[i] = item_to_remove_placeholder[i].capitalize()
-
     item_to_remove = ' '.join(item_to_remove_placeholder)
     print(item_to_remove)
     if item_to_remove in CART:
-        if elm['item'].lower() == ' '.join(str(item_remove).lower().split()[1::]):
-            if elm['item_selects'] > 0:
-                elm['item_selects'] -= 1
-                print(dedent(f'''
-                One order of {elm['item']} has been removed from your order.
-                '''))
-            else:
-                print(dedent(f'''
-                You can only remove menu items you've already added!
-                '''))
-                selection = input('')
-                order_something(selection)
+        if CART[item_to_remove] > 1:
+            CART[item_to_remove] -= 1
+            print(dedent(f'''
+            One order of {item_to_remove} has been removed from your order.
+            '''))
+        elif CART[item_to_remove] <= 1:
+            CART.pop(item_to_remove, None)
+            print(dedent(f'''
+            One order of {item_to_remove} has been removed from your order.
+            '''))
+    else:
+        print(dedent(f'''
+        You can only remove menu items you've already added!
+        '''))
+        selection = input('')
+        order_something(selection)
     view_order_total()
 
 
 # This function is the main user input handler.
 def order_something(user_input):
-    cap_input = user_input.lower().capitalize()
+    user_input_placeholder = str(user_input).split()[0::]
+    for i in range(len(user_input_placeholder)):
+        user_input_placeholder[i] = user_input_placeholder[i].capitalize()
+
+    cap_input = ' '.join(user_input_placeholder)
     if cap_input == 'Quit':
         exit()
         return
@@ -233,18 +236,21 @@ def order_something(user_input):
         view_order_total()
         return
     elif cap_input.split()[0] == 'Remove':
-        remove_item(user_input)
+        remove_item(cap_input)
         return
     if cap_input in ITEMS:
         view_category(cap_input)
         selection = input('')
         order_something(selection)
         return
-    add_to_cart(cap_input)
+    for sections in ITEMS.keys():
+        if cap_input in ITEMS[sections]:
+            add_to_cart(cap_input)
 
             # except TypeError:
             #     quantity_error()
-    wrong_order()
+    else:
+        wrong_order()
 
 
 def add_to_cart(cap_input):
