@@ -2,298 +2,70 @@ from textwrap import dedent
 from decimal import Decimal, ROUND_UP
 import sys
 import uuid
+import math
 
 
 WIDTH = 96
 # order_complete = False
-ITEMS = [
-    {
-    'section': 'Appetizers',
-    'item': 'Wings',
-    'item_selects': 0,
-    'cost': 2.00,
+ITEMS = {
+    'Appetizers': {
+        'Wings': [2.00, 10],
+        'Cookies': [2.50, 10],
+        'Spring Rolls': [3.25, 10],
+        'Fries': [3.15, 10],
+        'Fried Rice': [4.15, 10],
+        'Poutine': [6.35, 10],
+        'Bean Dip': [1.19, 10],
+        'Cheese Sticks': [5.75, 10],
+        'Chips and Dip': [2.75, 10],
     },
-    {
-    'section': 'Appetizers',
-    'item': 'Cookies',
-    'item_selects': 0,
-    'cost': 2.50,
+    'Entrees': {
+        'Salmon': [12.75, 10],
+        'Steak': [18.50],
+        'Meat Tornado': [22.99, 10],
+        'A Literal Garden': [199.99, 10],
+        'Burrito': [8.50, 10],
+        'Pizza': [15.00, 10],
+        'Fajitas': [16.75, 10],
+        'Chicken Katsu': [10.99, 10],
+        'Fried Chicken': [15.99, 10],
     },
-    {
-    'section': 'Appetizers',
-    'item': 'Spring Rolls',
-    'item_selects': 0,
-    'cost': 3.25,
+    'Desserts': {
+        'Ice Cream': [5.00, 10],
+        'Cake': [15.99, 10],
+        'Pie': [12.25, 10],
+        'Gelato': [8.00, 10],
+        'Popsicle': [1.50, 10],
+        'Milkshake': [6.20, 10],
+        'Creme Brulee': [8.99, 10],
+        'Chocolate Bar': [4.99, 10],
+        'Peach Cobbler': [12.99, 10],
     },
-    {
-    'section': 'Appetizers',
-    'item': 'Fries',
-    'item_selects': 0,
-    'cost': 3.15,
+    'Drinks': {
+        'Coffee': [5.00, 10],
+        'Tea': [3.75, 10],
+        'Blood of the Internet': [666.66, 10],
+        'Kool-Aid': [3.75, 10],
+        'Martini': [7.50, 10],
+        'Purple Drank': [12.00, 10],
+        'Beer': [5.75, 10],
+        'Lemonade': [3.99, 10],
+        'Shirley Temple': [4.55, 10],
     },
-    {
-    'section': 'Appetizers',
-    'item': 'Fried Rice',
-    'item_selects': 0,
-    'cost': 4.15,
-    },{
-    'section': 'Appetizers',
-    'item': 'Poutine',
-    'item_selects': 0,
-    'cost': 6.35,
+    'Sides': {
+        'Hash Browns': [3.00, 10],
+        'Bacon': [2.50, 10],
+        'BBQ Sauce': [0.50, 10],
+        'Guacamole': [500.00, 10],
+        'Fortune Cookie': [1.00, 10],
+        'Pickles': [2.75, 10],
+        'Tatar Sauce': [0.50, 10],
+        'Ketchup': [0.50, 10],
+        'Mayonnaise': [0.50, 10],
     },
-    {
-    'section': 'Appetizers',
-    'item': 'Bean Dip',
-    'item_selects': 0,
-    'cost': 1.19,
-    },
-    {
-    'section': 'Appetizers',
-    'item': 'Cheese Sticks',
-    'item_selects': 0,
-    'cost': 5.75,
-    },
-    {
-    'section': 'Appetizers',
-    'item': 'Chips and Dip',
-    'item_selects': 0,
-    'cost': 2.75,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Salmon',
-    'item_selects': 0,
-    'cost': 12.75,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Steak',
-    'item_selects': 0,
-    'cost': 18.50,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Meat Tornado',
-    'item_selects': 0,
-    'cost': 22.99,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'A Literal Garden',
-    'item_selects': 0,
-    'cost': 199.99,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Burrito',
-    'item_selects': 0,
-    'cost': 8.50,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Pizza',
-    'item_selects': 0,
-    'cost': 15.00,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Fajitas',
-    'item_selects': 0,
-    'cost': 16.75,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Chicken Katsu',
-    'item_selects': 0,
-    'cost': 10.99,
-    },
-    {
-    'section': 'Entrees',
-    'item': 'Fried Chicken',
-    'item_selects': 0,
-    'cost': 15.99,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Ice Cream',
-    'item_selects': 0,
-    'cost': 5.00,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Cake',
-    'item_selects': 0,
-    'cost': 15.99,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Pie',
-    'item_selects': 0,
-    'cost': 12.25,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Gelato',
-    'item_selects': 0,
-    'cost': 8.00,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Popsicle',
-    'item_selects': 0,
-    'cost': 1.50,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Milkshake',
-    'item_selects': 0,
-    'cost': 6.20,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Creme Brulee',
-    'item_selects': 0,
-    'cost': 8.99,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Chocolate Bar',
-    'item_selects': 0,
-    'cost': 4.99,
-    },
-    {
-    'section': 'Desserts',
-    'item': 'Peach Cobbler',
-    'item_selects': 0,
-    'cost': 12.99,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Coffee',
-    'item_selects': 0,
-    'cost': 5.00
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Tea',
-    'item_selects': 0,
-    'cost': 3.75,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Blood of the Internet',
-    'item_selects': 0,
-    'cost': 666.66
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Kool-Aid',
-    'item_selects': 0,
-    'cost': 3.75,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Martini',
-    'item_selects': 0,
-    'cost': 7.50,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Purple Drank',
-    'item_selects': 0,
-    'cost': 12.00,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Beer',
-    'item_selects': 0,
-    'cost': 5.75,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Lemonade',
-    'item_selects': 0,
-    'cost': 3.99,
-    },
-    {
-    'section': 'Drinks',
-    'item': 'Shirley Temple',
-    'item_selects': 0,
-    'cost': 4.55,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Hash Browns',
-    'item_selects': 0,
-    'cost': 3.00,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Bacon',
-    'item_selects': 0,
-    'cost': 2.50,
-    },
-    {
-    'section': 'Sides',
-    'item': 'BBQ Sauce',
-    'item_selects': 0,
-    'cost': 0.50,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Guacamole',
-    'item_selects': 0,
-    'cost': 500.00,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Fortune Cookie',
-    'item_selects': 0,
-    'cost': 1.00,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Pickles',
-    'item_selects': 0,
-    'cost': 2.75,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Tatar Sauce',
-    'item_selects': 0,
-    'cost': 0.50,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Ketchup',
-    'item_selects': 0,
-    'cost': 0.50,
-    },
-    {
-    'section': 'Sides',
-    'item': 'Mayonnaise',
-    'item_selects': 0,
-    'cost': 0.50,
-    },
-    ]
-SECTIONS = [
-    {
-    'section': 'Appetizers',
-    },
-    {
-    'section': 'Entrees',
-    },
-    {
-    'section': 'Desserts',
-    },
-    {
-    'section': 'Drinks',
-    },
-    {
-    'section': 'Sides',
-    },
-]
+    }
+CART = {
+}
 
 # This function displays the initial greeting, as well as the function commands available
 def greeting():
@@ -321,19 +93,18 @@ def greeting():
 
 # This function displays the menu of items.
 def menu():
-    for item in SECTIONS:
-        ln_one = item['section']
+    for section in ITEMS.keys():
+        ln_one = section
         print(dedent(f'''
 
             {ln_one}
             {'-' * len(ln_one)}
         '''))
-        for elm in ITEMS:
-            if item['section'] == elm['section']:
-                ln_two = elm['item']
-                ln_three = format_nums(elm['cost'])
-                ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
-                print(dedent(f'''{ln_four}'''))
+        for elm in ITEMS[section]:
+            ln_two = elm
+            ln_three = format_nums(ITEMS[section][elm][0])
+            ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
+            print(dedent(f'''{ln_four}'''))
 
 
 # This function displays a question, and call the order_something function with user input as the argument
@@ -356,18 +127,19 @@ def view_menu():
 
 
 # This function allows the user to view a specific category, as well as all the items within that category
-def view_category(section):
-    ln_one = section
+def view_category(category):
+    ln_one = category
     print(dedent(f'''
         {ln_one}
         {'-' * len(ln_one)}
         '''))
-    for elm in ITEMS:
-        if section == elm['section']:
-            ln_two = elm['item']
-            ln_three = format_nums(elm['cost'])
-            ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
-            print(dedent(f'''{ln_four}'''))
+    for section in ITEMS.keys():
+        if category == section:
+            for elm in ITEMS[section]:
+                ln_two = elm
+                ln_three = format_nums(ITEMS[section][elm][0])
+                ln_four = str(ln_two) + (' ' * (WIDTH - (len(ln_two) + len(ln_three)))) + str(ln_three)
+                print(dedent(f'''{ln_four}'''))
     print(dedent('''
     '''))
 
@@ -386,17 +158,17 @@ def view_order_total():
         {ln_three}
         {'=' * WIDTH}
     '''))
-    for elm in ITEMS:
-        if elm['item_selects'] != 0:
-            total_cost = total_cost + (elm['cost']*elm['item_selects'])
-            ln_four = str(elm['item']) + ' x' + str(elm['item_selects'])
-            item_total_cost = elm['item_selects'] * elm['cost']
-            item_cost_dec = str("{:.2f}".format(item_total_cost))
-            ln_five = '$' + str(item_cost_dec)
-            # stln_five(Decimal('10.00')))
-            white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
-            print(dedent(f'''
-            {ln_four + white_space_length + ln_five}'''))
+    for elm in CART:
+        for sections in ITEMS:
+            if elm in ITEMS[sections]:
+                total_cost = total_cost + (elm[0] * ITEMS[sections][elm][0])
+                ln_four = str(elm) + ' x' + str(elm[0])
+                item_total_cost = elm[0] * ITEMS[sections][elm][0]
+                item_cost_dec = str("{:.2f}".format(item_total_cost))
+                ln_five = '$' + str(item_cost_dec)
+                white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
+                print(dedent(f'''
+                {ln_four + white_space_length + ln_five}'''))
     tax_total = total_cost * (0.101)
     totals_total = total_cost + tax_total
     ln_six = 'Subtotal'
@@ -441,32 +213,63 @@ def remove_item(item_remove):
 
 # This function is the main user input handler.
 def order_something(user_input):
-    if str(user_input).lower() == 'quit':
+    cap_input = user_input.lower().capitalize()
+    if cap_input == 'Quit':
         exit()
         return
-    elif str(user_input).lower() == 'menu':
+    elif cap_input == 'Menu':
         view_menu()
         return
-    elif str(user_input).lower() == 'order':
+    elif cap_input == 'Order':
         view_order_total()
         return
-    elif str(user_input).lower().split()[0] == 'remove':
+    elif cap_input.split()[0] == 'Remove':
         remove_item(user_input)
         return
-    for category in SECTIONS:
-        if category['section'].lower() == str(user_input).lower():
-            view_category(category['section'])
-            selection = input('')
-            order_something(selection)
-            return
-    for menu_items in ITEMS:
-        if menu_items['item'].lower() == str(user_input).lower():
-            menu_items['item_selects'] += 1
-            order_complete(menu_items)
-            return
-    else:
-        wrong_order()
+    if cap_input in ITEMS:
+        view_category(cap_input)
+        selection = input('')
+        order_something(selection)
+        return
+    add_to_cart(cap_input)
 
+            # except TypeError:
+            #     quantity_error()
+    wrong_order()
+
+
+def add_to_cart(cap_input):
+    for sections in ITEMS.keys():
+        if cap_input in ITEMS[sections]:
+            quantity_added = input(dedent('''Quantity?
+            '''))
+            if quantity_added.isdigit() or quantity_added == '':
+                if quantity_added == '':
+                    quantity_added = '1'
+                quantity_added = int(quantity_added)
+                if cap_input in CART:
+                    if quantity_added > 0:
+                        CART[cap_input] += quantity_added
+                        order_complete(cap_input)
+                        return
+                    else:
+                        CART[cap_input][0] += 1
+                        order_complete(cap_input)
+                        return
+                elif cap_input not in CART:
+                    CART[cap_input] = quantity_added
+                    order_complete(cap_input)
+                    return
+            else:
+                quantity_error()
+
+
+def quantity_error():
+    print(dedent('''
+            Invalid quantity! Try again
+        '''))
+    selection = input('')
+    order_something(selection)
 
 # This function displays when the user puts in an incorrect order
 def wrong_order():
@@ -479,18 +282,21 @@ def wrong_order():
 
 # This function displays when a single item has been added to the users meal order
 def order_complete(order_status):
-    if order_status['item_selects'] > 1:
+    print(order_status)
+    if CART[order_status] > 1:
         string_one = ' orders of '
         string_two = ' have been added to your meal'
     else:
         string_one = ' order of '
         string_two = ' has been added to your meal'
     running_total = 0
-    for elm in ITEMS:
-        if elm['item_selects'] > 0:
-            running_total = running_total + (elm['item_selects'] * elm['cost'])
-    string_three = order_status['item_selects']
-    string_four = order_status['item']
+    for section in ITEMS.keys():
+        for elm in ITEMS[section]:
+            if elm == order_status:
+                running_total = running_total + (int(CART[order_status]) * ITEMS[section][elm][0])
+
+    string_three = CART[order_status]
+    string_four = order_status
     ln_one = str(string_three) + str(string_one) + str(string_four) + str(string_two)
     ln_two = 'Your running total is ' + format_nums(running_total)
 
@@ -503,7 +309,7 @@ def order_complete(order_status):
 
 
 def format_nums(number):
-    string = '$' + str("{:.2f}".format(number))
+    string = '$' + str("{:.2f}".format(float(number)))
     return string
 
 # This function allows the user to exit the program
