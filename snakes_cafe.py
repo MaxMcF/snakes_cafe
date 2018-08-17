@@ -341,11 +341,16 @@ def order_complete(order_status):
 
 
 def format_nums(number):
+    '''This formats any number into a dollar amount to 2 decimals
+    '''
     string = '$' + str("{:.2f}".format(float(number)))
     return string
 
 
 def check_menu():
+    '''This function checks to see if the user wants to use a custom menu.
+    If they do, it replaces the default menu with the custom one.
+    '''
     menu_input = input('''Type custom if using a custom menu, otherwise hit enter
     >''')
     if menu_input.lower() == 'custom':
@@ -374,6 +379,9 @@ def check_menu():
 
 
 def menu_decoder(csv_menu):
+    '''This function takes the raw .csv file and formats it the same way that
+
+    '''
     custom_menu = {}
     line_list = csv_menu.split('\n')
 
