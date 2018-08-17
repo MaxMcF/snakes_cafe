@@ -1,11 +1,17 @@
-from snakes_cafe.snakes_cafe import order_something, menu_decoder
+import snakes_cafe.snakes_cafe as sc
 import pytest
 
 def test_order_function_exists():
-    assert order_something
+    assert sc.order_something
+
 
 def test_csv_decoder():
-    expected = {'animal':{'cat':[8.6, 4], 'blue whale':[300,000, 2]}}
-    actual = menu_decoder('Tots,Antipasto,2.50,25\nCaviar,Antipasto,25.99,12')
+    expected = {'animal':{'cat':[8.6, 4], 'blue whale':[300000, 2]}}
+    actual = sc.menu_decoder('cat,animal,8.6,4\nblue whale,animal,300000,2')
     assert expected == actual
 
+
+def test_format_num():
+    expected = '$13.87'
+    actual = sc.format_nums(13.87454321)
+    assert expected == actual
