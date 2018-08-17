@@ -3,13 +3,14 @@ from decimal import Decimal, ROUND_UP
 import sys
 import uuid
 import math
+import copy
 
 
 # This currently does not allow for multi line inputs to work. Needs refactoring in the remove function as well. Need everything for lab 3, currently nothing...
 
 WIDTH = 96
 # order_complete = False
-ITEMS = {
+DEFAULT_MENU = {
     'Appetizers': {
         'Wings': [2.00, 10],
         'Cookies': [2.50, 10],
@@ -19,7 +20,7 @@ ITEMS = {
         'Poutine': [6.35, 10],
         'Bean Dip': [1.19, 10],
         'Cheese Sticks': [5.75, 10],
-        'Chips and Dip': [2.75, 10],
+        'Chips And Dip': [2.75, 10],
     },
     'Entrees': {
         'Salmon': [12.75, 10],
@@ -66,6 +67,7 @@ ITEMS = {
         'Mayonnaise': [0.50, 10],
     },
     }
+
 CART = {
 }
 
@@ -262,19 +264,27 @@ def add_to_cart(cap_input):
                 if quantity_added == '':
                     quantity_added = '1'
                 quantity_added = int(quantity_added)
-                if cap_input in CART:
-                    if quantity_added > 0:
-                        CART[cap_input] += quantity_added
-                        order_complete(cap_input)
-                        return
-                    else:
-                        CART[cap_input][0] += 1
-                        order_complete(cap_input)
-                        return
-                elif cap_input not in CART:
-                    CART[cap_input] = quantity_added
-                    order_complete(cap_input)
-                    return
+                for sections in ITEMS:
+                    if cap_input in ITEMS[sections]:
+                        temp_quant = ITEMS[sections][cap_input][1]
+                        ITEMS[sections][cap_input][1] -= quantity_added
+                        if ITEMS[sections][cap_input][1] < 0:
+                            ITEMS[sections][cap_input][1] = temp_quant
+                            out_of_stock(cap_input)
+                        else:
+                            if cap_input in CART:
+                                if quantity_added > 0:
+                                    CART[cap_input] += quantity_added
+                                    order_complete(cap_input)
+                                    return
+                                else:
+                                    CART[cap_input][0] += 1
+                                    order_complete(cap_input)
+                                    return
+                            elif cap_input not in CART:
+                                CART[cap_input] = quantity_added
+                                order_complete(cap_input)
+                                return
             else:
                 quantity_error()
 
@@ -294,6 +304,13 @@ def wrong_order():
     selection = input('')
     order_something(selection)
 
+
+def out_of_stock(item_input):
+    print(dedent(f'''
+    Sorry, we dont have enough {item_input} in stock! Try ordering less
+    '''))
+    selection = input(' ')
+    order_something(selection)
 
 # This function displays when a single item has been added to the users meal order
 def order_complete(order_status):
@@ -327,6 +344,49 @@ def format_nums(number):
     string = '$' + str("{:.2f}".format(float(number)))
     return string
 
+
+def check_menu():
+    menu_input = input('''Type custom if using a custom menu, otherwise hit enter
+    >''')
+    if menu_input.lower() == 'custom':
+        menu_path = input('''Please type the path name of the menu file (example: ./assets/custom_menu.csv)
+        >''')
+        file_structure = menu_path.split('/')
+        file_extension = file_structure[-1].split('.')
+        if file_extension[1] != 'csv':
+            print('You did not enter a valid CSV file, please try again')
+            return check_menu()
+        else:
+            try:
+                with open(menu_path) as file:
+                    csv_menu = file.read()
+                    custom_menu = menu_decoder(csv_menu)
+                    print(custom_menu)
+                    return custom_menu
+            except FileNotFoundError:
+                print('File Not Found!')
+                return check_menu()
+    elif menu_input.lower() == '':
+        return DEFAULT_MENU
+    else:
+        print('That was not a valid command, Try again')
+        return check_menu()
+
+
+def menu_decoder(csv_menu):
+    custom_menu = {}
+    line_list = csv_menu.split('\n')
+
+    for line in line_list:
+        seperated_line = line.split(',')
+        temp_dict = {seperated_line[0]: [float(seperated_line[2]), int(seperated_line[3])]}
+        if str(seperated_line[1]) not in custom_menu:
+            custom_menu[str(seperated_line[1])] = temp_dict
+        else:
+            custom_menu[str(seperated_line[1])][seperated_line[0]] = [float(seperated_line[2]), int(seperated_line[3])]
+    return custom_menu
+
+
 # This function allows the user to exit the program
 def exit():
     print(dedent('''
@@ -334,6 +394,8 @@ def exit():
     '''))
     sys.exit()
 
+
+ITEMS = check_menu()
 
 # This is the main function handler
 def run():
