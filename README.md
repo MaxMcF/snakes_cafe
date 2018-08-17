@@ -17,7 +17,8 @@ To use this applicaiton, being by starting your pipenv in your local repo contai
 You can then type in any of the menu items, which then adds them to your "meal".
 You can type "quit" at any time to exit out of the program.
 Typing any of the menu sections shows only that section of menu items.
-Typing "remove" followed by any item added to the menu will remove that item from your order
+Typing "remove" followed by any item added to the menu will remove that item from your order.
+The user can add a .csv file to their folder if they want to add an external menu.
 
 ## Change Log
 
@@ -29,4 +30,8 @@ Typing "remove" followed by any item added to the menu will remove that item fro
 08-14-2018 5:30pm - Added extra items to the menu
 08-14-2018 4:30pm - fixed decimal problems
 08-15-2018 10:00am - Fixed testing, added costs to menu, added more remove functionality
-
+08-15-2018 2:30pm - began refactoring men items to iterate through easier
+08-15-2018 6:30pm - finally finished squashing all bugs
+08-16-2018 3:30pm - Added logic for importing custom menu
+08-16-2018 4:30pm - lots of bugs involved in global variables
+08-16-2018 6:30pm - Finished refactoring global variables, testing does not work.

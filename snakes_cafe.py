@@ -10,7 +10,7 @@ import copy
 
 WIDTH = 96
 # order_complete = False
-DEFAULT_MENU = {
+ITEMS = {
     'Appetizers': {
         'Wings': [2.00, 10],
         'Cookies': [2.50, 10],
@@ -24,7 +24,7 @@ DEFAULT_MENU = {
     },
     'Entrees': {
         'Salmon': [12.75, 10],
-        'Steak': [18.50],
+        'Steak': [18.50, 10],
         'Meat Tornado': [22.99, 10],
         'A Literal Garden': [199.99, 10],
         'Burrito': [8.50, 10],
@@ -71,6 +71,13 @@ DEFAULT_MENU = {
 CART = {
 }
 
+# class Order:
+#     def __init__(self):
+#         self.receipt = {'subtotal': 0}
+#         self.id = str(uuid.uuid4())
+
+#     def __repr__(self:
+#         retu)
 # This function displays the initial greeting, as well as the function commands available
 def greeting():
     ln_one = 'Welcome to the Snakes Cafe!'
@@ -366,13 +373,13 @@ def check_menu():
                 with open(menu_path) as file:
                     csv_menu = file.read()
                     custom_menu = menu_decoder(csv_menu)
-                    print(custom_menu)
-                    return custom_menu
+                    global ITEMS
+                    ITEMS = custom_menu
             except FileNotFoundError:
                 print('File Not Found!')
                 return check_menu()
     elif menu_input.lower() == '':
-        return DEFAULT_MENU
+        return
     else:
         print('That was not a valid command, Try again')
         return check_menu()
@@ -403,13 +410,15 @@ def exit():
     sys.exit()
 
 
-ITEMS = check_menu()
+
 
 # This is the main function handler
 def run():
     greeting()
+    check_menu()
     menu()
     order_question()
+
 
 
 
@@ -418,3 +427,4 @@ if __name__ == '__main__':
         run()
     except KeyboardInterrupt:
         print('Thanks for coming!')
+
