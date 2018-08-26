@@ -68,17 +68,183 @@ ITEMS = {
     },
     }
 
-CART = {
-}
+class Order():
+    def __init__(self):
+        self.id = uuid.uuid4()
+        self.cart = {}
 
-# class Order:
-#     def __init__(self):
-#         self.receipt = {'subtotal': 0}
-#         self.id = str(uuid.uuid4())
+    def __len__(self):
+        items_in_cart = 0
+        for elm in self.cart:
+            items_in_cart = items_in_cart + self.cart[elm]
+        return items_in_cart
 
-#     def __repr__(self:
-#         retu)
-# This function displays the initial greeting, as well as the function commands available
+    def __repr__(self):
+        total_cost = 0
+        items_in_cart = 0
+        for elm in self.cart:
+            for sections in ITEMS:
+                if elm in ITEMS[sections]:
+                    total_cost = total_cost + (self.cart[elm] * ITEMS[sections][elm][0])
+            items_in_cart = items_in_cart + self.cart[elm]
+        return f'< Order: {self.id} | Items: {items_in_cart} | Total: {format_nums(total_cost)}>'
+
+    def add_item(self, item_name, quantity = 1):
+        """Adds item to the customers cart dictionary, then runs the display order function
+
+            Args:
+                name of the item to be added.
+                quantity of that item to be added (default of one)
+
+        """
+        for sections in ITEMS.keys():
+            if item_name in ITEMS[sections]:
+                quantity_added = input(dedent('''Quantity?
+                '''))
+                if quantity_added.isdigit() or quantity_added == '':
+                    if quantity_added == '':
+                        quantity_added = '1'
+                    quantity_added = int(quantity_added)
+                    for sections in ITEMS:
+                        if item_name in ITEMS[sections]:
+                            temp_quant = ITEMS[sections][item_name][1]
+                            ITEMS[sections][item_name][1] -= quantity_added
+                            if ITEMS[sections][item_name][1] < 0:
+                                ITEMS[sections][item_name][1] = temp_quant
+                                out_of_stock(item_name, self)
+                            else:
+                                if item_name in self.cart:
+                                    if quantity_added > 0:
+                                        self.cart[item_name] += quantity_added
+                                        return item_name
+                                    else:
+                                        self.cart[item_name][0] += 1
+                                        return item_name
+                                elif item_name not in self.cart:
+                                    self.cart[item_name] = quantity_added
+                                    return item_name
+                else:
+                    quantity_error(self)
+
+    def remove_item(self, item_name, quantity = 1):
+        """Removes items specified from the customers cart dictionary
+
+            Args:
+                item name to be destroyed
+                quantity of destruction, which is defaulted to 1
+            return:
+                prints an update message, or an error message if the users tries to
+                remove too many items
+        """
+        if item_name in self.cart:
+            if self.cart[item_name] > 1:
+                self.cart[item_name] -= 1
+                print(dedent(f'''
+                One order of {item_name} has been removed from your order.
+                '''))
+            elif self.cart[item_name] <= 1:
+                self.cart.pop(item_name, None)
+                print(dedent(f'''
+                One order of {item_name} has been removed from your order.
+                '''))
+        else:
+            print(dedent(f'''
+            You can only remove menu items you've already added!
+            '''))
+            selection = input('')
+            order_something(selection, self)
+
+    def display_order(self, order_status):
+        """Displays a running total and the most recent additions to customer cart
+
+            Args:
+                item that was added
+
+            return:
+                A message that shows what was added and what the current running
+                total is
+        """
+        if self.cart[order_status] > 1:
+            string_one = ' orders of '
+            string_two = ' have been added to your meal'
+        else:
+            string_one = ' order of '
+            string_two = ' has been added to your meal'
+        running_total = 0
+        for section in ITEMS.keys():
+            for elm in ITEMS[section]:
+                if elm in self.cart:
+                    running_total = running_total + (int(self.cart[elm]) * ITEMS[section][elm][0])
+
+        string_three = self.cart[order_status]
+        string_four = order_status
+        ln_one = str(string_three) + str(string_one) + str(string_four) + str(string_two)
+        ln_two = 'Your running total is ' + format_nums(running_total)
+
+        print(dedent(f'''
+            {'**' + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + ln_one + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + '**'}
+            {'**' + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + ln_two + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + '**'}
+        '''))
+
+    def print_order(self):
+        """Finalizes the users order, displaying the items being bought, the
+        subtotal and total due. This also creates a reciept file inside the project folder
+        """
+        receipt = None
+        total_cost = 0
+        ln_one = 'The Snakes Cafe'
+        ln_two = '"Eatability unconstricted!"'
+        ln_three = str('Order #') + str(uuid.uuid4())
+        receipt = dedent(f'''
+            {'*' * WIDTH}
+            {ln_one}
+            {ln_two}
+
+            {ln_three}
+            {'=' * WIDTH}
+        ''')
+        for elm in self.cart:
+            for sections in ITEMS:
+                if elm in ITEMS[sections]:
+                    total_cost = total_cost + (self.cart[elm] * ITEMS[sections][elm][0])
+                    ln_four = str(elm) + ' x' + str(self.cart[elm])
+                    item_total_cost = self.cart[elm] * ITEMS[sections][elm][0]
+                    item_cost_dec = str("{:.2f}".format(item_total_cost))
+                    ln_five = '$' + str(item_cost_dec)
+                    white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
+                    receipt = receipt + dedent(f'''
+                    {ln_four + white_space_length + ln_five}''')
+        tax_total = total_cost * (0.101)
+        totals_total = total_cost + tax_total
+        ln_six = 'Subtotal'
+        ln_seven = format_nums(total_cost)
+        white_space_length_01 = (' ' * (WIDTH - (len(ln_six) + len(ln_seven))))
+        ln_eight = 'Sales Tax'
+        ln_nine = format_nums(tax_total)
+        white_space_length_02 = (' ' * (WIDTH - (len(ln_eight) + len(ln_nine))))
+        ln_ten = 'Total Due'
+        ln_eleven = format_nums(totals_total)
+        white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
+        receipt = receipt + dedent(f'''
+            {'-' * WIDTH}
+            {ln_six + white_space_length_01 + ln_seven}
+            {ln_eight + white_space_length_02 + ln_nine}
+            {'-' * len(ln_eight)}
+            {ln_ten + white_space_length_03 + ln_eleven}
+            {'*' * WIDTH}
+        ''')
+        print(receipt)
+        file = open(f"Order-{self.id}", "w")
+        file.write(receipt)
+        file.close()
+
+
+
+
+
+
+current_id = None
+
 def greeting():
     ln_one = 'Welcome to the Snakes Cafe!'
     ln_two = 'Please see our menu below.'
@@ -119,7 +285,7 @@ def menu():
 
 
 # This function displays a question, and call the order_something function with user input as the argument
-def order_question():
+def order_question(order_obj):
     ln_one = 'What would you like to order?'
     question = dedent(f'''
         {'*' * WIDTH}
@@ -127,14 +293,14 @@ def order_question():
         {'*' * WIDTH}
     ''')
     user_input = input(question)
-    order_something(user_input)
+    order_something(user_input, order_obj)
 
 
 # This function calls the menu function and allows for the user to input a new command
-def view_menu():
+def view_menu(order_obj):
     menu()
     selection = input('')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 
 # This function allows the user to view a specific category, as well as all the items within that category
@@ -156,80 +322,22 @@ def view_category(category):
 
 
 # This function displays the total cost owed depending on the state of the users order
-def view_order_total():
-    total_cost = 0
-    ln_one = 'The Snakes Cafe'
-    ln_two = '"Eatability unconstricted!"'
-    ln_three = str('Order #') + str(uuid.uuid4())
-    print(dedent(f'''
-        {'*' * WIDTH}
-        {ln_one}
-        {ln_two}
-
-        {ln_three}
-        {'=' * WIDTH}
-    '''))
-    for elm in CART:
-        for sections in ITEMS:
-            if elm in ITEMS[sections]:
-                total_cost = total_cost + (CART[elm] * ITEMS[sections][elm][0])
-                ln_four = str(elm) + ' x' + str(CART[elm])
-                item_total_cost = CART[elm] * ITEMS[sections][elm][0]
-                item_cost_dec = str("{:.2f}".format(item_total_cost))
-                ln_five = '$' + str(item_cost_dec)
-                white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
-                print(dedent(f'''
-                {ln_four + white_space_length + ln_five}'''))
-    tax_total = total_cost * (0.101)
-    totals_total = total_cost + tax_total
-    ln_six = 'Subtotal'
-    ln_seven = format_nums(total_cost)
-    white_space_length_01 = (' ' * (WIDTH - (len(ln_six) + len(ln_seven))))
-    ln_eight = 'Sales Tax'
-    ln_nine = format_nums(tax_total)
-    white_space_length_02 = (' ' * (WIDTH - (len(ln_eight) + len(ln_nine))))
-    ln_ten = 'Total Due'
-    ln_eleven = format_nums(totals_total)
-    white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
-    print(dedent(f'''
-        {'-' * WIDTH}
-        {ln_six + white_space_length_01 + ln_seven}
-        {ln_eight + white_space_length_02 + ln_nine}
-        {'-' * len(ln_eight)}
-        {ln_ten + white_space_length_03 + ln_eleven}
-        {'*' * WIDTH}
-    '''))
+def view_order_total(order_obj):
+    order_obj.print_order()
     selection = input('')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 
 # This function removes a single item from the users current meal.
-def remove_item(item_remove):
+def remove_item(item_remove, order_obj):
     item_to_remove_placeholder = str(item_remove).split()[1::]
     item_to_remove = ' '.join(item_to_remove_placeholder)
-    print(item_to_remove)
-    if item_to_remove in CART:
-        if CART[item_to_remove] > 1:
-            CART[item_to_remove] -= 1
-            print(dedent(f'''
-            One order of {item_to_remove} has been removed from your order.
-            '''))
-        elif CART[item_to_remove] <= 1:
-            CART.pop(item_to_remove, None)
-            print(dedent(f'''
-            One order of {item_to_remove} has been removed from your order.
-            '''))
-    else:
-        print(dedent(f'''
-        You can only remove menu items you've already added!
-        '''))
-        selection = input('')
-        order_something(selection)
-    view_order_total()
+    order_obj.remove_item(item_to_remove)
+    view_order_total(order_obj)
 
 
 # This function is the main user input handler.
-def order_something(user_input):
+def order_something(user_input, order_obj):
     user_input_placeholder = str(user_input).split()[0::]
     for i in range(len(user_input_placeholder)):
         user_input_placeholder[i] = user_input_placeholder[i].capitalize()
@@ -239,112 +347,76 @@ def order_something(user_input):
         exit()
         return
     elif cap_input == 'Menu':
-        view_menu()
+        view_menu(order_obj)
         return
     elif cap_input == 'Order':
-        view_order_total()
+        view_order_total(order_obj)
+        return
+    elif cap_input == 'Repr':
+        print(repr(order_obj))
+        selection = input('')
+        order_something(selection, order_obj)
+    elif cap_input == 'Len':
+        print(len(order_obj))
+        selection = input('')
+        order_something(selection, order_obj)
         return
     elif cap_input.split()[0] == 'Remove':
-        remove_item(cap_input)
+        remove_item(cap_input, order_obj)
         return
-    if cap_input in ITEMS:
+    elif cap_input in ITEMS:
         view_category(cap_input)
         selection = input('')
-        order_something(selection)
+        order_something(selection, order_obj)
         return
-    for sections in ITEMS.keys():
-        if cap_input in ITEMS[sections]:
-            add_to_cart(cap_input)
-
+    elif cap_input is not int:
+        for sections in ITEMS.keys():
+            if cap_input in ITEMS[sections]:
+                add_to_cart(cap_input, order_obj)
+                return
+        wrong_order(order_obj)
+        return
             # except TypeError:
             #     quantity_error()
     else:
-        wrong_order()
+        wrong_order(order_obj)
+        return
 
 
-def add_to_cart(cap_input):
-    for sections in ITEMS.keys():
-        if cap_input in ITEMS[sections]:
-            quantity_added = input(dedent('''Quantity?
-            '''))
-            if quantity_added.isdigit() or quantity_added == '':
-                if quantity_added == '':
-                    quantity_added = '1'
-                quantity_added = int(quantity_added)
-                for sections in ITEMS:
-                    if cap_input in ITEMS[sections]:
-                        temp_quant = ITEMS[sections][cap_input][1]
-                        ITEMS[sections][cap_input][1] -= quantity_added
-                        if ITEMS[sections][cap_input][1] < 0:
-                            ITEMS[sections][cap_input][1] = temp_quant
-                            out_of_stock(cap_input)
-                        else:
-                            if cap_input in CART:
-                                if quantity_added > 0:
-                                    CART[cap_input] += quantity_added
-                                    order_complete(cap_input)
-                                    return
-                                else:
-                                    CART[cap_input][0] += 1
-                                    order_complete(cap_input)
-                                    return
-                            elif cap_input not in CART:
-                                CART[cap_input] = quantity_added
-                                order_complete(cap_input)
-                                return
-            else:
-                quantity_error()
+def add_to_cart(cap_input, order_obj):
+    ordered_item = order_obj.add_item(cap_input)
+    order_obj.display_order(ordered_item)
+    selection = input('')
+    order_something(selection, order_obj)
 
 
-def quantity_error():
+def quantity_error(order_obj):
     print(dedent('''
             Invalid quantity! Try again
         '''))
     selection = input('')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 # This function displays when the user puts in an incorrect order
-def wrong_order():
+def wrong_order(order_obj):
     print(dedent('''
             Please order something off the menu!
         '''))
     selection = input('')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 
-def out_of_stock(item_input):
+def out_of_stock(item_input, order_obj):
     print(dedent(f'''
     Sorry, we dont have enough {item_input} in stock! Try ordering less
     '''))
     selection = input(' ')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 # This function displays when a single item has been added to the users meal order
-def order_complete(order_status):
-    print(order_status)
-    if CART[order_status] > 1:
-        string_one = ' orders of '
-        string_two = ' have been added to your meal'
-    else:
-        string_one = ' order of '
-        string_two = ' has been added to your meal'
-    running_total = 0
-    for section in ITEMS.keys():
-        for elm in ITEMS[section]:
-            if elm == order_status:
-                running_total = running_total + (int(CART[order_status]) * ITEMS[section][elm][0])
-
-    string_three = CART[order_status]
-    string_four = order_status
-    ln_one = str(string_three) + str(string_one) + str(string_four) + str(string_two)
-    ln_two = 'Your running total is ' + format_nums(running_total)
-
-    print(dedent(f'''
-        {'**' + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + ln_one + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + '**'}
-        {'**' + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + ln_two + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + '**'}
-    '''))
+def order_complete(order_status, order_obj):
     selection = input(' ')
-    order_something(selection)
+    order_something(selection, order_obj)
 
 
 def format_nums(number):
@@ -416,8 +488,11 @@ def exit():
 def run():
     greeting()
     check_menu()
+    new_customer = Order()
+    global current_id
+    current_id = new_customer.id
     menu()
-    order_question()
+    order_question(new_customer)
 
 
 

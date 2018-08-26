@@ -15,3 +15,9 @@ def test_format_num():
     expected = '$13.87'
     actual = sc.format_nums(13.87454321)
     assert expected == actual
+
+
+# def test_order_question_function():
+#     sc.order_question()
+#     expected = ''
+#     assert expected == actual
