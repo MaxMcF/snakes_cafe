@@ -74,8 +74,10 @@ class Order():
         self.cart = {}
 
     def __len__(self):
-        items_in_cart = self.cart.keys()
-        return len(items_in_cart)
+        items_in_cart = 0
+        for elm in self.cart:
+            items_in_cart = items_in_cart + self.cart[elm]
+        return items_in_cart
 
     def __repr__(self):
         total_cost = 0
@@ -87,14 +89,14 @@ class Order():
             items_in_cart = items_in_cart + self.cart[elm]
         return f'< Order: {self.id} | Items: {items_in_cart} | Total: {format_nums(total_cost)}>'
 
-    def calc_total(self):
-        for elm in self.cart:
-            for sections in ITEMS:
-                if elm in ITEMS[sections]:
-                    total_cost = total_cost + (self.cart[elm] * ITEMS[sections][elm][0])
-        return total_cost
-
     def add_item(self, item_name, quantity = 1):
+        """Adds item to the customers cart dictionary, then runs the display order function
+
+            Args:
+                name of the item to be added.
+                quantity of that item to be added (default of one)
+
+        """
         for sections in ITEMS.keys():
             if item_name in ITEMS[sections]:
                 quantity_added = input(dedent('''Quantity?
@@ -125,6 +127,15 @@ class Order():
                     quantity_error(self)
 
     def remove_item(self, item_name, quantity = 1):
+        """Removes items specified from the customers cart dictionary
+
+            Args:
+                item name to be destroyed
+                quantity of destruction, which is defaulted to 1
+            return:
+                prints an update message, or an error message if the users tries to
+                remove too many items
+        """
         if item_name in self.cart:
             if self.cart[item_name] > 1:
                 self.cart[item_name] -= 1
@@ -144,6 +155,15 @@ class Order():
             order_something(selection, self)
 
     def display_order(self, order_status):
+        """Displays a running total and the most recent additions to customer cart
+
+            Args:
+                item that was added
+
+            return:
+                A message that shows what was added and what the current running
+                total is
+        """
         if self.cart[order_status] > 1:
             string_one = ' orders of '
             string_two = ' have been added to your meal'
@@ -167,18 +187,22 @@ class Order():
         '''))
 
     def print_order(self):
+        """Finalizes the users order, displaying the items being bought, the
+        subtotal and total due. This also creates a reciept file inside the project folder
+        """
+        receipt = None
         total_cost = 0
         ln_one = 'The Snakes Cafe'
         ln_two = '"Eatability unconstricted!"'
         ln_three = str('Order #') + str(uuid.uuid4())
-        print(dedent(f'''
+        receipt = dedent(f'''
             {'*' * WIDTH}
             {ln_one}
             {ln_two}
 
             {ln_three}
             {'=' * WIDTH}
-        '''))
+        ''')
         for elm in self.cart:
             for sections in ITEMS:
                 if elm in ITEMS[sections]:
@@ -188,8 +212,8 @@ class Order():
                     item_cost_dec = str("{:.2f}".format(item_total_cost))
                     ln_five = '$' + str(item_cost_dec)
                     white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
-                    print(dedent(f'''
-                    {ln_four + white_space_length + ln_five}'''))
+                    receipt = receipt + dedent(f'''
+                    {ln_four + white_space_length + ln_five}''')
         tax_total = total_cost * (0.101)
         totals_total = total_cost + tax_total
         ln_six = 'Subtotal'
@@ -201,7 +225,7 @@ class Order():
         ln_ten = 'Total Due'
         ln_eleven = format_nums(totals_total)
         white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
-        receipt = dedent(f'''
+        receipt = receipt + dedent(f'''
             {'-' * WIDTH}
             {ln_six + white_space_length_01 + ln_seven}
             {ln_eight + white_space_length_02 + ln_nine}
@@ -210,6 +234,9 @@ class Order():
             {'*' * WIDTH}
         ''')
         print(receipt)
+        file = open(f"Order-{self.id}", "w")
+        file.write(receipt)
+        file.close()
 
 
 
@@ -327,6 +354,10 @@ def order_something(user_input, order_obj):
         return
     elif cap_input == 'Repr':
         print(repr(order_obj))
+        selection = input('')
+        order_something(selection, order_obj)
+    elif cap_input == 'Len':
+        print(len(order_obj))
         selection = input('')
         order_something(selection, order_obj)
         return
