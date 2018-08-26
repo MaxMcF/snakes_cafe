@@ -74,10 +74,18 @@ class Order():
         self.cart = {}
 
     def __len__(self):
-        return len(self.cart.keys())
+        items_in_cart = self.cart.keys()
+        return len(items_in_cart)
 
     def __repr__(self):
-        return (f'< Order: {self.id} | Items: {len(self)} | Total: {self.calc_total}>')
+        total_cost = 0
+        items_in_cart = 0
+        for elm in self.cart:
+            for sections in ITEMS:
+                if elm in ITEMS[sections]:
+                    total_cost = total_cost + (self.cart[elm] * ITEMS[sections][elm][0])
+            items_in_cart = items_in_cart + self.cart[elm]
+        return f'< Order: {self.id} | Items: {items_in_cart} | Total: {format_nums(total_cost)}>'
 
     def calc_total(self):
         for elm in self.cart:
@@ -136,7 +144,6 @@ class Order():
             order_something(selection, self)
 
     def display_order(self, order_status):
-        print(order_status)
         if self.cart[order_status] > 1:
             string_one = ' orders of '
             string_two = ' have been added to your meal'
@@ -146,8 +153,8 @@ class Order():
         running_total = 0
         for section in ITEMS.keys():
             for elm in ITEMS[section]:
-                if elm == order_status:
-                    running_total = running_total + (int(self.cart[order_status]) * ITEMS[section][elm][0])
+                if elm in self.cart:
+                    running_total = running_total + (int(self.cart[elm]) * ITEMS[section][elm][0])
 
         string_three = self.cart[order_status]
         string_four = order_status
@@ -194,28 +201,23 @@ class Order():
         ln_ten = 'Total Due'
         ln_eleven = format_nums(totals_total)
         white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
-        print(dedent(f'''
+        receipt = dedent(f'''
             {'-' * WIDTH}
             {ln_six + white_space_length_01 + ln_seven}
             {ln_eight + white_space_length_02 + ln_nine}
             {'-' * len(ln_eight)}
             {ln_ten + white_space_length_03 + ln_eleven}
             {'*' * WIDTH}
-        '''))
+        ''')
+        print(receipt)
+
+
 
 
 
 
 current_id = None
 
-# class Order:
-#     def __init__(self):
-#         self.receipt = {'subtotal': 0}
-#         self.id = str(uuid.uuid4())
-
-#     def __repr__(self:
-#         retu)
-# This function displays the initial greeting, as well as the function commands available
 def greeting():
     ln_one = 'Welcome to the Snakes Cafe!'
     ln_two = 'Please see our menu below.'
@@ -294,49 +296,7 @@ def view_category(category):
 
 # This function displays the total cost owed depending on the state of the users order
 def view_order_total(order_obj):
-    order_obj.display_order()
-    # total_cost = 0
-    # ln_one = 'The Snakes Cafe'
-    # ln_two = '"Eatability unconstricted!"'
-    # ln_three = str('Order #') + str(uuid.uuid4())
-    # print(dedent(f'''
-    #     {'*' * WIDTH}
-    #     {ln_one}
-    #     {ln_two}
-
-    #     {ln_three}
-    #     {'=' * WIDTH}
-    # '''))
-    # for elm in CART:
-    #     for sections in ITEMS:
-    #         if elm in ITEMS[sections]:
-    #             total_cost = total_cost + (CART[elm] * ITEMS[sections][elm][0])
-    #             ln_four = str(elm) + ' x' + str(CART[elm])
-    #             item_total_cost = CART[elm] * ITEMS[sections][elm][0]
-    #             item_cost_dec = str("{:.2f}".format(item_total_cost))
-    #             ln_five = '$' + str(item_cost_dec)
-    #             white_space_length = (' ' * (WIDTH - (len(ln_four) + len(ln_five))))
-    #             print(dedent(f'''
-    #             {ln_four + white_space_length + ln_five}'''))
-    # tax_total = total_cost * (0.101)
-    # totals_total = total_cost + tax_total
-    # ln_six = 'Subtotal'
-    # ln_seven = format_nums(total_cost)
-    # white_space_length_01 = (' ' * (WIDTH - (len(ln_six) + len(ln_seven))))
-    # ln_eight = 'Sales Tax'
-    # ln_nine = format_nums(tax_total)
-    # white_space_length_02 = (' ' * (WIDTH - (len(ln_eight) + len(ln_nine))))
-    # ln_ten = 'Total Due'
-    # ln_eleven = format_nums(totals_total)
-    # white_space_length_03 = (' ' * (WIDTH - (len(ln_ten) + len(ln_eleven))))
-    # print(dedent(f'''
-    #     {'-' * WIDTH}
-    #     {ln_six + white_space_length_01 + ln_seven}
-    #     {ln_eight + white_space_length_02 + ln_nine}
-    #     {'-' * len(ln_eight)}
-    #     {ln_ten + white_space_length_03 + ln_eleven}
-    #     {'*' * WIDTH}
-    # '''))
+    order_obj.print_order()
     selection = input('')
     order_something(selection, order_obj)
 
@@ -345,24 +305,7 @@ def view_order_total(order_obj):
 def remove_item(item_remove, order_obj):
     item_to_remove_placeholder = str(item_remove).split()[1::]
     item_to_remove = ' '.join(item_to_remove_placeholder)
-    order_obj(item_to_remove)
-    # if item_to_remove in CART:
-    #     if CART[item_to_remove] > 1:
-    #         CART[item_to_remove] -= 1
-    #         print(dedent(f'''
-    #         One order of {item_to_remove} has been removed from your order.
-    #         '''))
-    #     elif CART[item_to_remove] <= 1:
-    #         CART.pop(item_to_remove, None)
-    #         print(dedent(f'''
-    #         One order of {item_to_remove} has been removed from your order.
-    #         '''))
-    # else:
-    #     print(dedent(f'''
-    #     You can only remove menu items you've already added!
-    #     '''))
-    #     selection = input('')
-    #     order_something(selection)
+    order_obj.remove_item(item_to_remove)
     view_order_total(order_obj)
 
 
@@ -382,6 +325,11 @@ def order_something(user_input, order_obj):
     elif cap_input == 'Order':
         view_order_total(order_obj)
         return
+    elif cap_input == 'Repr':
+        print(repr(order_obj))
+        selection = input('')
+        order_something(selection, order_obj)
+        return
     elif cap_input.split()[0] == 'Remove':
         remove_item(cap_input, order_obj)
         return
@@ -390,19 +338,25 @@ def order_something(user_input, order_obj):
         selection = input('')
         order_something(selection, order_obj)
         return
-    for sections in ITEMS.keys():
-        if cap_input in ITEMS[sections]:
-            add_to_cart(cap_input, order_obj)
-
+    elif cap_input is not int:
+        for sections in ITEMS.keys():
+            if cap_input in ITEMS[sections]:
+                add_to_cart(cap_input, order_obj)
+                return
+        wrong_order(order_obj)
+        return
             # except TypeError:
             #     quantity_error()
-        else:
-            wrong_order(order_obj)
+    else:
+        wrong_order(order_obj)
+        return
 
 
 def add_to_cart(cap_input, order_obj):
     ordered_item = order_obj.add_item(cap_input)
     order_obj.display_order(ordered_item)
+    selection = input('')
+    order_something(selection, order_obj)
 
 
 def quantity_error(order_obj):
@@ -430,28 +384,6 @@ def out_of_stock(item_input, order_obj):
 
 # This function displays when a single item has been added to the users meal order
 def order_complete(order_status, order_obj):
-    # print(order_status)
-    # if CART[order_status] > 1:
-    #     string_one = ' orders of '
-    #     string_two = ' have been added to your meal'
-    # else:
-    #     string_one = ' order of '
-    #     string_two = ' has been added to your meal'
-    # running_total = 0
-    # for section in ITEMS.keys():
-    #     for elm in ITEMS[section]:
-    #         if elm == order_status:
-    #             running_total = running_total + (int(CART[order_status]) * ITEMS[section][elm][0])
-
-    # string_three = CART[order_status]
-    # string_four = order_status
-    # ln_one = str(string_three) + str(string_one) + str(string_four) + str(string_two)
-    # ln_two = 'Your running total is ' + format_nums(running_total)
-
-    # print(dedent(f'''
-    #     {'**' + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + ln_one + (' ' * (((WIDTH - len(ln_one)) // 2)-2)) + '**'}
-    #     {'**' + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + ln_two + (' ' * (((WIDTH - len(ln_two)) // 2)-2)) + '**'}
-    # '''))
     selection = input(' ')
     order_something(selection, order_obj)
 
